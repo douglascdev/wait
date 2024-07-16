@@ -2,7 +2,8 @@ package lexer
 
 import (
 	"testing"
-	"wait/token"
+
+	"github.com/douglascdev/wait/token"
 )
 
 func TestNextToken(t *testing.T) {
