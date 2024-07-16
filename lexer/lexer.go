@@ -36,7 +36,19 @@ func newToken(tokenType token.TokenType, ch byte) token.Token {
 	}
 }
 
-// Look at current character under examination and return a token depending on which character it is
+func isLetter(ch byte) bool {
+	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
+}
+
+func (l *Lexer) readIdentifier() string {
+	startPos := l.position
+	for isLetter(l.ch) {
+		l.readChar()
+	}
+	return l.input[startPos:l.position]
+}
+
+// Look at current character under examination and return a token depending on which character(s) it is
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 
@@ -60,6 +72,14 @@ func (l *Lexer) NextToken() token.Token {
 	case 0:
 		tok.Literal = ""
 		tok.Type = token.EOF
+	default:
+		if isLetter(l.ch) {
+			tok.Literal = l.readIdentifier()
+			tok.Type = token.LookupIdent(tok.Literal)
+			return tok
+		} else {
+			tok = newToken(token.ILLEGAL, l.ch)
+		}
 	}
 
 	l.readChar()
